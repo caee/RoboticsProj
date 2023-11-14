@@ -1,6 +1,7 @@
 import cv2
 from matplotlib import pyplot as plt
 import numpy as np
+from robotConnect import *
 '''
 cam = cv2.VideoCapture(0)
 result, img = cam.read()
@@ -35,13 +36,73 @@ cv2.waitKey(0)
 '''
 
 
+# def detect_round_object(frame):
+#     # Convert the frame to grayscale
+#     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+#     # Apply GaussianBlur to reduce noise and help with contour detection
+#     blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+
+#     # Use HoughCircles to detect circles in the image
+#     circles = cv2.HoughCircles(
+#         blurred,
+#         cv2.HOUGH_GRADIENT,
+#         dp=1,
+#         minDist=20,
+#         param1=50,
+#         param2=30,
+#         minRadius=10,
+#         maxRadius=50
+#     )
+
+#     if circles is not None:
+#         # Convert the (x, y) coordinates and radius of the circles to integers
+#         circles = np.round(circles[0, :]).astype("int")
+
+#         # Draw the circles on the frame
+#         for (x, y, r) in circles:
+#             if (frame[y][x][2] > 80 and frame[y][x][1] < 80 and frame[y][x][1] < 80):
+#                 cv2.circle(frame, (x, y), r, (0, 255, 0), 4)
+
+#     return frame
+
+# def detect_round_object(frame):
+#     # Convert the frame to grayscale
+#     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+#     # Apply GaussianBlur to reduce noise and help with contour detection
+#     blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+
+#     # Use HoughCircles to detect circles in the image
+#     circles = cv2.HoughCircles(
+#         blurred,
+#         cv2.HOUGH_GRADIENT,
+#         dp=1,
+#         minDist=20,
+#         param1=50,
+#         param2=30,
+#         minRadius=10,
+#         maxRadius=50
+#     )
+
+#     if circles is not None:
+#         # Convert the (x, y) coordinates and radius of the circles to integers
+#         circles = np.round(circles[0, :]).astype("int")
+
+#         # Draw the circles on the frame
+#         for (x, y, r) in circles:
+#             if (frame[y][x][2] > 80 and frame[y][x][1] < 80 and frame[y][x][1] < 80):
+#                 cv2.circle(frame, (x, y), r, (0, 255, 0), 4)
+
+#     return frame
+
 def detect_round_object(frame):
     # Convert the frame to grayscale
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
     # Apply GaussianBlur to reduce noise and help with contour detection
-    blurred = cv2.GaussianBlur(gray, (5, 5), 0)
-
+    #blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+    blurred=gray
     # Use HoughCircles to detect circles in the image
     circles = cv2.HoughCircles(
         blurred,
@@ -60,16 +121,27 @@ def detect_round_object(frame):
 
         # Draw the circles on the frame
         for (x, y, r) in circles:
+            print(x)
             if (frame[y][x][2] > 80 and frame[y][x][1] < 80 and frame[y][x][1] < 80):
                 cv2.circle(frame, (x, y), r, (0, 255, 0), 4)
 
     return frame
 
+# def circleCentroid(circle):
+    
+#     return 
 
 def main():
     # Open the default camera (camera index 0)
     cap = cv2.VideoCapture(0)
-
+    print("video capture is open")
+    portHandler,packetHandler=robotConnect("COM4")
+    zeroPos=[150,150,150,150]
+    testPos=[170,170,170,170]
+    tablePos=[150,120,98,150]
+    pos=zeroPos
+    robotMove(portHandler,packetHandler,pos)
+    
     if not cap.isOpened():
         print("Error: Could not open camera.")
         return
@@ -90,13 +162,18 @@ def main():
         cv2.imshow("Round Object Detection", result_frame)
 
         # Break the loop if 'q' key is pressed
-        if cv2.waitKey(1) &     0xFF == ord('q'):
+        pressedKey = cv2.waitKey(1) & 0xFF
+        if pressedKey == ord('q'):
             break
-
+        elif pressedKey == ord('z'):
+            robotMove(portHandler,packetHandler,zeroPos)
+        elif pressedKey == ord('x'):
+            robotMove(portHandler,packetHandler,tablePos)
+        
     # Release the camera and close all OpenCV windows
     cap.release()
     cv2.destroyAllWindows()
-
+    robotTerminate(portHandler,packetHandler)
 
 if __name__ == "__main__":
     main()
