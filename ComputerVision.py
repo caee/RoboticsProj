@@ -90,7 +90,7 @@ def main():
         cv2.imshow("Round Object Detection", result_frame)
 
         # Break the loop if 'q' key is pressed
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        if cv2.waitKey(1) &     0xFF == ord('q'):
             break
 
     # Release the camera and close all OpenCV windows
