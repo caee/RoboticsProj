@@ -8,6 +8,10 @@ import cv2
 import numpy as np
 
 
+import os
+os.chdir('[C:\\Users\\carle\\Documents\\RoboticsProj]')
+
+
 def detect_round_object(frame):
     # Convert the frame to grayscale
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
