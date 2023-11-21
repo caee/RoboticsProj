@@ -96,7 +96,7 @@ cv2.waitKey(0)
 
 #     return frame
 
-def detect_round_object(frame):
+def detect_round_object(frame,debug=False):
     # Convert the frame to grayscale
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
@@ -125,12 +125,11 @@ def detect_round_object(frame):
                 cv2.circle(frame, (x, y), r, (0, 255, 0), 4)
             elif (y > 450 and x > 610 and frame[y+10][x+10][2] > 110 and frame[y+10][x+10][1] < 70 and frame[y+10][x+10][0] < 30):
                 cv2.circle(frame, (x, y), r, (0, 255, 0), 4)
-
-    frame[230:250][:][2] = 0
-    frame[230:250][:][1] = 0
-    frame[230:250][:][0] = 0
-
-    print(frame[240][320][2], frame[240][320][1], frame[240][320][0])
+    if debug==True:
+        frame[230:250][:][2] = 0
+        frame[230:250][:][1] = 0
+        frame[230:250][:][0] = 0
+        print(frame[240][320][2], frame[240][320][1], frame[240][320][0])
     return frame
 
 # def circleCentroid(circle):
@@ -145,13 +144,12 @@ def main():
         print("Error: Could not open camera.")
 
     print("video capture is open")
-    portHandler, packetHandler = robotConnect("COM5")
+    portHandler, packetHandler = robotConnect("COM4")
     zeroPos = [150, 150, 150, 150]
     testPos = [170, 170, 170, 170]
     tablePos = [150, 120, 98, 150]
     pos = zeroPos
     robotMove(portHandler, packetHandler, pos)
-    print('test')
     if not cap.isOpened():
         print("Error: Could not open camera.")
         return
