@@ -5,7 +5,7 @@ Connects to robot and primes motors
 import dynamixel_sdk as dxl
 import time
 import numpy as np
-import cv2 as cv
+import cv2
 
 ADDR_MX_TORQUE_ENABLE = 24
 
@@ -166,11 +166,3 @@ def robotTerminate(portHandler, packetHandler, DXL_IDS=stdIDS, disTorque=0):
 
     # Close port
     portHandler.closePort()
-
-
-def testDevice(source):
-    # From https://stackoverflow.com/questions/48049886/how-to-correctly-check-if-a-camera-is-available
-    # Tests camera devices
-    cap = cv.VideoCapture(source)
-    if cap is None or not cap.isOpened():
-        print('Warning: unable to open video source: ', source)

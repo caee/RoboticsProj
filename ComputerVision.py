@@ -121,10 +121,16 @@ def detect_round_object(frame):
 
         # Draw the circles on the frame
         for (x, y, r) in circles:
-            print(x)
-            if (frame[y][x][2] > 80 and frame[y][x][1] < 80 and frame[y][x][1] < 80):
+            if (frame[y-1][x-1][2] > 110 and frame[y-1][x-1][1] < 70 and frame[y-1][x-1][0] < 30):
+                cv2.circle(frame, (x, y), r, (0, 255, 0), 4)
+            elif (y > 450 and x > 610 and frame[y+10][x+10][2] > 110 and frame[y+10][x+10][1] < 70 and frame[y+10][x+10][0] < 30):
                 cv2.circle(frame, (x, y), r, (0, 255, 0), 4)
 
+    frame[230:250][:][2] = 0
+    frame[230:250][:][1] = 0
+    frame[230:250][:][0] = 0
+
+    print(frame[240][320][2], frame[240][320][1], frame[240][320][0])
     return frame
 
 # def circleCentroid(circle):
@@ -134,16 +140,18 @@ def detect_round_object(frame):
 
 def main():
     # Open the default camera (camera index 0)
-    testDevice(1)
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+    if not cap.isOpened():
+        print("Error: Could not open camera.")
+
     print("video capture is open")
-    portHandler, packetHandler = robotConnect("COM4")
+    portHandler, packetHandler = robotConnect("COM5")
     zeroPos = [150, 150, 150, 150]
     testPos = [170, 170, 170, 170]
     tablePos = [150, 120, 98, 150]
     pos = zeroPos
     robotMove(portHandler, packetHandler, pos)
-
+    print('test')
     if not cap.isOpened():
         print("Error: Could not open camera.")
         return
