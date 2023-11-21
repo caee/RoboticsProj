@@ -101,8 +101,8 @@ def detect_round_object(frame):
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
     # Apply GaussianBlur to reduce noise and help with contour detection
-    #blurred = cv2.GaussianBlur(gray, (5, 5), 0)
-    blurred=gray
+    # blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+    blurred = gray
     # Use HoughCircles to detect circles in the image
     circles = cv2.HoughCircles(
         blurred,
@@ -128,20 +128,22 @@ def detect_round_object(frame):
     return frame
 
 # def circleCentroid(circle):
-    
-#     return 
+
+#     return
+
 
 def main():
     # Open the default camera (camera index 0)
-    cap = cv2.VideoCapture(0)
+    testDevice(1)
+    cap = cv2.VideoCapture(1)
     print("video capture is open")
-    portHandler,packetHandler=robotConnect("COM4")
-    zeroPos=[150,150,150,150]
-    testPos=[170,170,170,170]
-    tablePos=[150,120,98,150]
-    pos=zeroPos
-    robotMove(portHandler,packetHandler,pos)
-    
+    portHandler, packetHandler = robotConnect("COM4")
+    zeroPos = [150, 150, 150, 150]
+    testPos = [170, 170, 170, 170]
+    tablePos = [150, 120, 98, 150]
+    pos = zeroPos
+    robotMove(portHandler, packetHandler, pos)
+
     if not cap.isOpened():
         print("Error: Could not open camera.")
         return
@@ -166,14 +168,15 @@ def main():
         if pressedKey == ord('q'):
             break
         elif pressedKey == ord('z'):
-            robotMove(portHandler,packetHandler,zeroPos)
+            robotMove(portHandler, packetHandler, zeroPos)
         elif pressedKey == ord('x'):
-            robotMove(portHandler,packetHandler,tablePos)
-        
+            robotMove(portHandler, packetHandler, tablePos)
+
     # Release the camera and close all OpenCV windows
     cap.release()
     cv2.destroyAllWindows()
-    robotTerminate(portHandler,packetHandler)
+    robotTerminate(portHandler, packetHandler)
+
 
 if __name__ == "__main__":
     main()
