@@ -49,7 +49,7 @@ def inverse_kin(X,oritentation,theta_3=1):
         q_3 = np.arccos((-a_2**2-a_3**2+d**2)/(2*a_2*a_3))
     else:
         sys.exit('Invalid option for third angle. Must be either 1 or 2')
-
+    
     # Determines second joint angle
     q_2 = - np.arctan2(p_03x_hat,p_03z) - np.arctan2(a_3*np.sin(q_3),a_2+a_3*np.cos(q_3)) + np.pi/2
 

@@ -2,6 +2,7 @@ import cv2
 from matplotlib import pyplot as plt
 import numpy as np
 from robotConnect import *
+import InverseKinematics as IK
 '''
 cam = cv2.VideoCapture(0)
 result, img = cam.read()
@@ -96,7 +97,7 @@ cv2.waitKey(0)
 
 #     return frame
 
-def detect_round_object(frame,debug=False):
+def detect_round_object(frame, debug=False):
     # Convert the frame to grayscale
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
@@ -125,7 +126,7 @@ def detect_round_object(frame,debug=False):
                 cv2.circle(frame, (x, y), r, (0, 255, 0), 4)
             elif (y > 450 and x > 610 and frame[y+10][x+10][2] > 110 and frame[y+10][x+10][1] < 70 and frame[y+10][x+10][0] < 30):
                 cv2.circle(frame, (x, y), r, (0, 255, 0), 4)
-    if debug==True:
+    if debug == True:
         frame[230:250][:][2] = 0
         frame[230:250][:][1] = 0
         frame[230:250][:][0] = 0
@@ -139,15 +140,20 @@ def detect_round_object(frame,debug=False):
 
 def main():
     # Open the default camera (camera index 0)
-    cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+    cap = cv2.VideoCapture(1, cv2.CAP_DSHOW)
     if not cap.isOpened():
         print("Error: Could not open camera.")
 
     print("video capture is open")
-    portHandler, packetHandler = robotConnect("COM4")
-    zeroPos = [150, 150, 150, 150]
+    portHandler, packetHandler = robotConnect("COM6")
+    zeroPos = [175, 150, 150, 150]
     testPos = [170, 170, 170, 170]
-    tablePos = [150, 120, 98, 150]
+    tablePos = [175, 120, 98, 150]
+    Postition = [100, 32, 170]
+    thetaValues = IK.inverse_kin(Postition, 0)
+    tablePos = [180/np.pi*thetaValues[0]+170, 180/np.pi*thetaValues[1]+150-90,
+                180/np.pi*thetaValues[2]+150, 180/np.pi*thetaValues[3]+150]
+
     pos = zeroPos
     robotMove(portHandler, packetHandler, pos)
     if not cap.isOpened():
