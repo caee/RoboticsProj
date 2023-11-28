@@ -32,7 +32,7 @@ stdMargin = 10
 stdSlope = 32
 stdSpeed = 80
 stdIDS = [1, 2, 3, 4]
-stdPunch=32
+stdPunch = 32
 
 # Set angle limits
 # Joint 1: 60-220deg
@@ -40,17 +40,17 @@ stdPunch=32
 # Joint 3: 150-190
 # Base : 0-300
 DPU = 300/1023  # Degrees per unit of position. Setting 300deg to max, maps to 1023
-J1min = 60/DPU
-J1max = 220/DPU
+J1min = 20/DPU
+J1max = 280/DPU
 J2min = 20/DPU
 J2max = 280/DPU
 J3min = 145/DPU
-J3max = 200/DPU
+J3max = 260/DPU
 Bmin = 1/DPU
 Bmax = 300/DPU
 
 
-def robotConnect(port, mode="joint", speed=stdSpeed, slope=stdSlope, margin=stdMargin, punch=stdPunch,DXL_IDS=stdIDS):
+def robotConnect(port, mode="joint", speed=stdSpeed, slope=stdSlope, margin=stdMargin, punch=stdPunch, DXL_IDS=stdIDS):
     '''
     Connects to a series of dynamixel AX-12A robots and initializes them
     inputs: port: connection port to robot 

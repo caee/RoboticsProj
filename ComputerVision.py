@@ -149,10 +149,10 @@ def main():
     zeroPos = [175, 150, 150, 150]
     testPos = [170, 170, 170, 170]
     tablePos = [175, 120, 98, 150]
-    Postition = [100, 32, 170]
-    thetaValues = IK.inverse_kin(Postition, 0)
-    tablePos = [180/np.pi*thetaValues[0]+170, 180/np.pi*thetaValues[1]+150-90,
-                180/np.pi*thetaValues[2]+150, 180/np.pi*thetaValues[3]+150]
+    Postition = [150, 0, 0]
+    # thetaValues = IK.inverse_kin(Postition, -np.pi/2)
+    # tablePos = [180/np.pi*thetaValues[0]+170, 180/np.pi*thetaValues[1]+150-90,
+    #            180/np.pi*thetaValues[2]+150, 180/np.pi*thetaValues[3]+240]
 
     pos = zeroPos
     robotMove(portHandler, packetHandler, pos)
@@ -181,9 +181,31 @@ def main():
             break
         elif pressedKey == ord('z'):
             robotMove(portHandler, packetHandler, zeroPos)
-        elif pressedKey == ord('x'):
+        elif pressedKey == ord('a'):
+            tablePos[0] = tablePos[0]+1
             robotMove(portHandler, packetHandler, tablePos)
-
+        elif pressedKey == ord('s'):
+            tablePos[0] = tablePos[0]-1
+            robotMove(portHandler, packetHandler, tablePos)
+        elif pressedKey == ord('d'):
+            tablePos[1] = tablePos[1]+1
+            robotMove(portHandler, packetHandler, tablePos)
+        elif pressedKey == ord('f'):
+            tablePos[1] = tablePos[1]-1
+            robotMove(portHandler, packetHandler, tablePos)
+        elif pressedKey == ord('g'):
+            tablePos[2] = tablePos[2]+1
+            robotMove(portHandler, packetHandler, tablePos)
+        elif pressedKey == ord('h'):
+            tablePos[2] = tablePos[2]-1
+            robotMove(portHandler, packetHandler, tablePos)
+        elif pressedKey == ord('j'):
+            tablePos[3] = tablePos[3]+1
+            robotMove(portHandler, packetHandler, tablePos)
+        elif pressedKey == ord('k'):
+            tablePos[3] = tablePos[3]-1
+            robotMove(portHandler, packetHandler, tablePos)
+    print(tablePos)
     # Release the camera and close all OpenCV windows
     cap.release()
     cv2.destroyAllWindows()

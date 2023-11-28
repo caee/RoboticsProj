@@ -1,7 +1,8 @@
 import numpy as np
 import sys
 
-def inverse_kin(X,oritentation,theta_3=1):
+
+def inverse_kin(X, oritentation, theta_3=1):
     """
     :param X: 3x1 array with coordinates [x,y,z]
     :type X: array
@@ -13,16 +14,15 @@ def inverse_kin(X,oritentation,theta_3=1):
     :rtype: array
     """
 
-
-    # Stylus orientation angle 
+    # Stylus orientation angle
     varphi = oritentation
 
     # DH parameters
-    a_1 = 50 # [mm]
-    a_2 = 93 # [mm]
-    a_3 = 93 # [mm]
-    a_4 = 50 # [mm]
-    
+    a_1 = 50  # [mm]
+    a_2 = 93  # [mm]
+    a_3 = 93  # [mm]
+    a_4 = 50  # [mm]
+
     # Disassembles coordinate vector and removes the height of the 'foot' from the z-value
     x_s = X[0]
     y_s = X[1]
@@ -33,25 +33,32 @@ def inverse_kin(X,oritentation,theta_3=1):
     # finds coordinates of the third joint angle
     p_03x_hat = x_hat - a_4*np.cos(varphi)
     p_03z = z_s - a_4*np.sin(varphi)
-    
+
     # find the distance between joint angle 1 and 3
-    d = np.sqrt((p_03z)**2 + p_03x_hat**2)   
+    d = np.sqrt((p_03z)**2 + p_03x_hat**2)
 
     # Determines first joint angle
-    q_1= np.arctan2(y_s,x_s)
+    q_1 = np.arctan2(y_s, x_s)
 
     # Determines third joint angle (two options)
     if theta_3 == 1:
-        #This is option 1 for theta_3
+        # This is option 1 for theta_3
+        print((a_2**2+a_3**2-d**2)/(2*a_2*a_3))
+        if ((a_2**2+a_3**2-d**2)/(2*a_2*a_3) < -1 or 1 < (a_2**2+a_3**2-d**2)/(2*a_2*a_3)):
+            print("outside workspace")
+            exit()
         q_3 = np.pi - np.arccos((a_2**2+a_3**2-d**2)/(2*a_2*a_3))
+
     elif theta_3 == 2:
-        #This is option 2 for theta_3
+        # This is option 2 for theta_3
         q_3 = np.arccos((-a_2**2-a_3**2+d**2)/(2*a_2*a_3))
+
     else:
         sys.exit('Invalid option for third angle. Must be either 1 or 2')
-    
+
     # Determines second joint angle
-    q_2 = - np.arctan2(p_03x_hat,p_03z) - np.arctan2(a_3*np.sin(q_3),a_2+a_3*np.cos(q_3)) + np.pi/2
+    q_2 = - np.arctan2(p_03x_hat, p_03z) - np.arctan2(a_3 *
+                                                      np.sin(q_3), a_2+a_3*np.cos(q_3)) + np.pi/2
 
     # Determines fourth joint angle
     q_4 = varphi - q_3 - q_2
