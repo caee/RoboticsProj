@@ -53,28 +53,38 @@ if not cap.isOpened():
     print("Error: Could not open camera.")
 
 print("video capture is open")
-portHandler, packetHandler = robotConnect("COM4")
-zeroPos = [150, 150, 150, 150]
-robotMove(portHandler, packetHandler, zeroPos)
-table1Pos = [140, 120, 98, 150]
-table2Pos = [160, 120, 98, 150]
+portHandler, packetHandler = robotConnect("COM5")
+# zeroPos = [150, 150, 150, 150]
+# robotMove(portHandler, packetHandler, zeroPos)
+# table1Pos = [140, 120, 98, 150]
+# table2Pos = [160, 120, 98, 150]
+table1Pos = [170, 135, 108, 140]
+table2Pos = [185, 135, 108, 140]
 
 #First, get 2 frames
 
 robotMove(portHandler, packetHandler, table1Pos)
+_,_ = cap.read() #flush camera frame
 ret, frame1 = cap.read()
 
 # Check if the frame was successfully captured
 if not ret:
     print("Error: Could not read frame.")
+print("waiting...")    
+# cv2.waitKey(2000)    
 robotMove(portHandler, packetHandler, table2Pos)
+
+print("what")
+_,_ = cap.read() #flush camera frame
 ret, frame2 = cap.read()
-cap.release()
 # Check if the frame was successfully captured
 if not ret:
     print("Error: Could not read frame.")
-    
-    
+cap.release()
+
+# cv2.imshow("Frame1",frame1)
+# cv2.imshow("Frame2",frame2)
+# cv2.waitKey(5000)    
 #Then, finding camera matrixes from images
 h,w = frame1.shape[:2]
 newcameramtx, roi = cv2.getOptimalNewCameraMatrix(mtx,dist,(w,h),1,(w,h))
@@ -120,7 +130,7 @@ matches = sorted(matches, key = lambda x:x.distance)
 kp_img = cv2.drawKeypoints(gray1, kp1, frame1, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 plt.figure(figsize = (10,10))
 plt.imshow(kp_img)
-img3 = cv2.drawMatches(gray1,kp1,gray2,kp2,matches[:10],None,flags=cv2.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
+img3 = cv2.drawMatches(gray1,kp1,gray2,kp2,matches[:30],None,flags=cv2.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
 
 plt.figure(figsize = (20,20))
 plt.imshow(img3)
@@ -128,7 +138,7 @@ plt.imshow(img3)
 
 
 #finding best matches and a fundamental matrix
-nb_matches = 200
+nb_matches = 100
 
 good = []
 pts1 = []
@@ -174,7 +184,7 @@ stereo.setUniquenessRatio(1)
 stereo.setSpeckleRange(3)
 stereo.setSpeckleWindowSize(3)
 
-disp = stereo.compute(gray1, gray2).astype(np.float32) / 16.0
+disp = stereo.compute(gray1,gray2).astype(np.float32) / 16.0
 print("disparity done, plotting")
 plt.figure(figsize=(18,18))
 plt.imshow(disp,'gray')

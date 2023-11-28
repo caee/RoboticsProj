@@ -56,7 +56,7 @@ T = [0, 2]
 qt1, qt2, qt3, qt4 = TP.trajectory(q_in, q_out, q_dot_in, q_dot_out, a_in, a_out, T)
 
 # Creates 100 points over the two seconds
-ts = np.linspace(0,2,10)
+ts = np.linspace(0,2,20)
 
 # Estimates 100 joint angles for the path
 q1s = qt1[5]*ts**5 + qt1[4]*ts**4 + qt1[3]*ts**3 + qt1[2]*ts**2 + qt1[1]*ts + qt1[0]
@@ -65,7 +65,7 @@ q3s = qt3[5]*ts**5 + qt3[4]*ts**4 + qt3[3]*ts**3 + qt3[2]*ts**2 + qt3[1]*ts + qt
 q4s = qt4[5]*ts**5 + qt4[4]*ts**4 + qt4[3]*ts**3 + qt4[2]*ts**2 + qt4[1]*ts + qt4[0]
 
 
-portHandler, packetHandler = RC.robotConnect("COM4",mode="joint",speed=70)
+portHandler, packetHandler = RC.robotConnect("COM5",mode="joint",speed=70)
 zeroPos = [150, 150, 150, 150]
 
 pos = zeroPos
@@ -76,7 +76,7 @@ while True:
     i+=1
     if i>(np.size(q1s)-1):
         break
-    pos=zeroPos+q_deg[:,i]
+    pos=zeroPos-q_deg[:,i]
     RC.robotMove(portHandler,packetHandler,pos)
     # Break the loop if 'q' key is pressed
     # pressedKey = cv2.waitKey(1) & 0xFF

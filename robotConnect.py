@@ -30,8 +30,9 @@ ADDR_CCW_ANGLE_LIMIT = 8
 
 stdMargin = 10
 stdSlope = 32
-stdSpeed = 70
+stdSpeed = 80
 stdIDS = [1, 2, 3, 4]
+stdPunch=32
 
 # Set angle limits
 # Joint 1: 60-220deg
@@ -43,13 +44,13 @@ J1min = 60/DPU
 J1max = 220/DPU
 J2min = 20/DPU
 J2max = 280/DPU
-J3min = 150/DPU
-J3max = 190/DPU
+J3min = 145/DPU
+J3max = 200/DPU
 Bmin = 1/DPU
 Bmax = 300/DPU
 
 
-def robotConnect(port, mode="joint", speed=stdSpeed, slope=stdSlope, margin=stdMargin, DXL_IDS=stdIDS):
+def robotConnect(port, mode="joint", speed=stdSpeed, slope=stdSlope, margin=stdMargin, punch=stdPunch,DXL_IDS=stdIDS):
     '''
     Connects to a series of dynamixel AX-12A robots and initializes them
     inputs: port: connection port to robot 
@@ -119,6 +120,8 @@ def robotConnect(port, mode="joint", speed=stdSpeed, slope=stdSlope, margin=stdM
             portHandler, DXL_IDS[i], ADDR_MX_CCW_COMPLIANCE_SLOPE, slope)
         packetHandler.write2ByteTxRx(
             portHandler, DXL_IDS[i], ADDR_MX_MOVING_SPEED, speed)
+        packetHandler.write2ByteTxRx(
+            portHandler, DXL_IDS[i], ADDR_MX_PUNCH, punch)
     return portHandler, packetHandler
 
 
