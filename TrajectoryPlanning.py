@@ -27,7 +27,8 @@ def trajectory(q_in, q_out,v_in,v_out,a_in,a_out,T):
     a_1 = 50 # [mm]
     a_2 = 93 # [mm]
     a_3 = 93 # [mm]
-    a_4 = 50 # [mm]
+    #a_4 = 50 # [mm]
+    a_4 = 80 # [mm] Updated to fit real life
 
     # Sets up the matrix to solve for the trajectory polynomial parameters
     Big_matrix = [[1, t_in, t_in**2, t_in**3, t_in**4, t_in**5],
@@ -62,8 +63,9 @@ def Transformation(q):
     a_1 = 50 # [mm]
     a_2 = 93 # [mm]
     a_3 = 93 # [mm]
-    a_4 = 50 # [mm]
-
+    #a_4 = 50 # [mm]
+    a_4 = 80 # [mm] Updated to fit real life
+    
     # joint angles
     t_1 = q[0]
     t_2 = q[1]

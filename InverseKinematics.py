@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Nov 21 16:25:32 2023
+
+@author: carle
+"""
 import numpy as np
 import sys
 
@@ -21,7 +27,9 @@ def inverse_kin(X,oritentation,theta_3=1):
     a_1 = 50 # [mm]
     a_2 = 93 # [mm]
     a_3 = 93 # [mm]
-    a_4 = 50 # [mm]
+    
+    #a_4 = 50 # [mm]
+    a_4 = 80 # [mm] Updated to fit real life
     
     # Disassembles coordinate vector and removes the height of the 'foot' from the z-value
     x_s = X[0]

@@ -35,7 +35,7 @@ h_mm=7 #Height of m&m
 robotMove(portHandler, packetHandler, table1Pos)
 _,_ = cap.read() #flush camera frame
 ret, frame = cap.read()
-cv2.imwrite('testimage.png', dst)
+cv2.imwrite('testimage.png', frame)
 
 robotTerminate(portHandler, packetHandler)
 cv2.destroyAllWindows()
