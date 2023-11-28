@@ -30,18 +30,67 @@ def detect_round_object(frame):
         minRadius=10,
         maxRadius=50
     )
+    hsv_image = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    
+    #Masking to get only the red ones
+    h,s,v = cv2.split(hsv_image)
+
+    # titles=['h','s','v']
+    # plt.figure(figsize = (16,4))
+    # plt.subplot(1,3,1), plt.imshow(h)
+    # plt.title(titles[0])
+    # plt.xticks([]),plt.yticks([])
+    # plt.subplot(1,3,2), plt.imshow(s)
+    # plt.title(titles[1])
+    # plt.xticks([]),plt.yticks([])
+    # plt.subplot(1,3,3), plt.imshow(v)
+    # plt.title(titles[2])
+    # plt.xticks([]),plt.yticks([])
+    
+    #First, thresholding hue
+    kernel=cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(3,3))
+    threshold = 15
+    threshold_value = 255
+
+    thresh1 = cv2.threshold(h, threshold, threshold_value, cv2.THRESH_BINARY_INV)[1]
+    #Closing!
+    mask1=cv2.erode(thresh1,kernel,iterations=3)
+    mask1=cv2.dilate(mask1,kernel,iterations=3)
+    # plt.figure(figsize = (16,4))
+    # plt.imshow(mask1, cmap='gray')
+    
+    #Then thresholding value
+    threshold = 100
+    threshold_value = 255
+    thresh2 = cv2.threshold(v, threshold, threshold_value, cv2.THRESH_BINARY)[1]
+    
+    
+    #Again, closing
+    mask2=cv2.erode(thresh2,kernel,iterations=3)
+    mask2=cv2.dilate(mask2,kernel,iterations=3)
+    # plt.figure(figsize = (16,4))
+    # plt.imshow(mask2, cmap='gray')
+    
+    #Combining the masks
+    mask=mask2 & mask1
+    # plt.figure(figsize = (16,4))
+    # plt.imshow(mask, cmap='gray')
+    #cv2.waitKey(10000)
     
     if circles is not None:
         # Convert the (x, y) coordinates and radius of the circles to integers
         circles = np.round(circles[0, :]).astype("int")
-
+        redCircles=[]
         # Draw the circles on the frame
+        
+        
         for (x, y, r) in circles:
-            if (frame[y][x][2] > 80 and frame[y][x][1] < 80 and frame[y][x][1] < 80):
+            if mask[y-1,x-1]==255:
                 cv2.circle(frame, (x, y), r, (0, 255, 0), 4)
+                redCircles.append([x,y,r])
                 
 
-    return frame, circles
+    return frame, np.array(redCircles)
 # Finds the depth of smarties in a plane, 
 # from the known height of the camera used, the focal length and centroid positions
 
@@ -125,24 +174,17 @@ cy=newcameramtx[1,2]
 
 d_camera=(mms[:,:2]-[cx,cy])*scaling_factor
 d=np.zeros((len(d_camera),3))
+
+#Magic factors to compensate for weird motor slip
+xfactor=0.3
+yfactor=1.1
 for i in range(0,len(d_camera)):
     #OFFSET from image center coordinates to robot coords
 
     d[i,0]=x_off-d_camera[i,1]
-    d[i,1]=-d_camera[i,0]
-    d[i,2]=z_off+h_mm+25
+    d[i,1]=-d_camera[i,0]*yfactor
+    d[i,2]=z_off+h_mm+25-d_camera[i,1]*xfactor #xfactor added to compensate for weird z drift
 
-#### TEST###
-q=inverse_kin(d[0,:].T,-np.pi/2,theta_3=2)
-
-#Convert to degrees
-q_deg=np.array([q[0],q[1],q[2],q[3]])*180/np.pi
-#Magic offsets found from experiments
-qOffsets=[170,60,150,240]
-q_deg=q_deg+qOffsets
-
-
-robotMove(portHandler, packetHandler, q_deg)
 
 
 for i in range(0,len(d)):
