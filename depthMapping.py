@@ -128,11 +128,18 @@ ret,mtx,dist,rvecs,tvecs=calibrateCamera(direc)
 # #cv2.imshow("Undistorted F2", dst2)
 # #cv2.waitKey(0)
 
+###### FOR TESTING PURPOSES #######
 dst1=cv2.imread('calibresult1.png')
 dst2=cv2.imread('calibresult2.png')
+h,w=np.shape(dst1)[:2]
+newcameramtx=np.genfromtxt("testnewcameramtx.csv", delimiter=",")
+
+#### END TESTING LOAD#####
+
 # cv2.destroyAllWindows()
 gray1=cv2.cvtColor(dst1,cv2.COLOR_BGR2GRAY)
 gray2=cv2.cvtColor(dst2,cv2.COLOR_BGR2GRAY)
+
 
 
 #IMAGE RECTIFICATION
@@ -182,8 +189,8 @@ Implement findFundamentalMat here:
 """
 F, mask = cv2.findFundamentalMat(pts1,pts2, method = cv2.FM_RANSAC, ransacReprojThreshold = 3.,confidence = 0.99)
 
-#E = cv2.findEssentialMat(pt1,pt2,newcameramtx)
-#F_from_E= newcameramtx.inv().t() * E * camera_matrix.inv()
+E = cv2.findEssentialMat(pts1,pts2,newcameramtx)
+F_from_E= newcameramtx.inv().t() * E * newcameramtx.inv()
 
 
 # We select only inlier points

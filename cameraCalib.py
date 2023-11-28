@@ -43,7 +43,7 @@ def captureChess(j):
     cap.release()
     cv2.destroyAllWindows()
 
-def calibrateCamera(directory=direc,nb_vert=9,nb_horiz=7,showcalib=False):
+def calibrateCamera(directory=direc,nb_vert=9,nb_horiz=6,showcalib=False):
     # termination criteria
     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
     # prepare object points, like (0,0,0), (1,0,0), (2,0,0) ....,(6,5,0)
@@ -72,5 +72,5 @@ def calibrateCamera(directory=direc,nb_vert=9,nb_horiz=7,showcalib=False):
     cv2.destroyAllWindows()
     ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
     return ret,mtx,dist,rvecs,tvecs
-#captureChess(10)
-#ret,mtx,dist,rvecs,tvecs=calibrateCamera(directory)
+#captureChess(15)
+#ret,mtx,dist,rvecs,tvecs=calibrateCamera(showcalib=True)
