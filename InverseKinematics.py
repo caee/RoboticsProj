@@ -41,12 +41,15 @@ def inverse_kin(X,oritentation,theta_3=1):
     q_1= np.arctan2(y_s,x_s)
 
     # Determines third joint angle (two options)
+    c_3 = (-a_2**2-a_3**2+d**2)/(2*a_2*a_3)
     if theta_3 == 1:
         #This is option 1 for theta_3
-        q_3 = np.pi - np.arccos((a_2**2+a_3**2-d**2)/(2*a_2*a_3))
+        #q_3 = np.pi - np.arccos((a_2**2+a_3**2-d**2)/(2*a_2*a_3))
+        q_3 = np.arctan2(np.sqrt(1-c_3**2),c_3) # changed this for the "elbow down"
     elif theta_3 == 2:
         #This is option 2 for theta_3
-        q_3 = np.arccos((-a_2**2-a_3**2+d**2)/(2*a_2*a_3))
+        # q_3 = np.arccos((-a_2**2-a_3**2+d**2)/(2*a_2*a_3))
+        q_3 = np.arctan2(-np.sqrt(1-c_3**2),c_3) # changed this to the "elbow up"
     else:
         sys.exit('Invalid option for third angle. Must be either 1 or 2')
     
