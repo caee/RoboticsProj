@@ -13,6 +13,14 @@ direc = "C:\\Users\\carle\\Documents\\RoboticsProj\\calib"
 os.chdir(direc) 
 
 def captureChess(j):
+    """
+    Captures j images of chessboard images for camera calibration
+    
+    :param j: number of chessboard images captured
+    :type j: int
+    """
+    #Open the camera instance
+    delay=1000 #Delay between image captures
     cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
     if not cap.isOpened():
         print("Error: Could not open camera.")
@@ -34,7 +42,8 @@ def captureChess(j):
         cv2.imwrite(filename,frame)
         
         # Break the loop if 'q' key is pressed
-        pressedKey = cv2.waitKey(1000) & 0xFF
+        
+        pressedKey = cv2.waitKey(delay) & 0xFF
         if pressedKey == ord('q'):
             break
         
@@ -44,6 +53,21 @@ def captureChess(j):
     cv2.destroyAllWindows()
 
 def calibrateCamera(directory=direc,nb_vert=9,nb_horiz=6,showcalib=False):
+    """
+    Takes a number of images of a chessboard with nb_vert x nb_horiz internal corners
+    Returns a set of calibration parameters
+    
+    :param j: number of chessboard images captured
+    :type X: array
+    :returns: 
+        :ret: value for determining whether corners have been found
+        :mtx: 3x3 matrix of intrinsic camera parameters
+        :dist: set of 5 distortion coefficients, determining tangential
+               and radial distortion
+        :rvecs: rotation defining pose of camera
+        :tvecs: translation defining pose of camera
+
+    """
     # termination criteria
     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
     # prepare object points, like (0,0,0), (1,0,0), (2,0,0) ....,(6,5,0)
@@ -70,6 +94,7 @@ def calibrateCamera(directory=direc,nb_vert=9,nb_horiz=6,showcalib=False):
                 cv2.imshow('img', img)
                 cv2.waitKey(500)
     cv2.destroyAllWindows()
+    #Calibrate camera
     ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
     return ret,mtx,dist,rvecs,tvecs
 #captureChess(15)

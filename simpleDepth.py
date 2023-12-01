@@ -12,7 +12,7 @@ from robotConnect import *
 from cameraCalib import calibrateCamera
 
 
-def detect_round_object(frame):
+def detect_round_object(frame,debug=False):
     # Convert the frame to grayscale
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
@@ -30,22 +30,28 @@ def detect_round_object(frame):
         minRadius=10,
         maxRadius=50
     )
+    #Converting image to HSV color space
     hsv_image = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     
-    #Masking to get only the red ones
+    ###########
+    # MASKING #
+    ###########
+    #Masking to get only the red ones. First, thresholding hue, then threshold
+    #value based on manual debugging
     h,s,v = cv2.split(hsv_image)
-
-    # titles=['h','s','v']
-    # plt.figure(figsize = (16,4))
-    # plt.subplot(1,3,1), plt.imshow(h)
-    # plt.title(titles[0])
-    # plt.xticks([]),plt.yticks([])
-    # plt.subplot(1,3,2), plt.imshow(s)
-    # plt.title(titles[1])
-    # plt.xticks([]),plt.yticks([])
-    # plt.subplot(1,3,3), plt.imshow(v)
-    # plt.title(titles[2])
-    # plt.xticks([]),plt.yticks([])
+    if debug:
+        #If debugging to fine-tune parameters
+        titles=['h','s','v']
+        plt.figure(figsize = (16,4))
+        plt.subplot(1,3,1), plt.imshow(h)
+        plt.title(titles[0])
+        plt.xticks([]),plt.yticks([])
+        plt.subplot(1,3,2), plt.imshow(s)
+        plt.title(titles[1])
+        plt.xticks([]),plt.yticks([])
+        plt.subplot(1,3,3), plt.imshow(v)
+        plt.title(titles[2])
+        plt.xticks([]),plt.yticks([])
     
     #First, thresholding hue
     kernel=cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(3,3))
@@ -53,11 +59,13 @@ def detect_round_object(frame):
     threshold_value = 255
 
     thresh1 = cv2.threshold(h, threshold, threshold_value, cv2.THRESH_BINARY_INV)[1]
-    #Closing!
+    #Closing to eliminate noise 
+    #and getting a mask for the hue based on finding the red smarties
     mask1=cv2.erode(thresh1,kernel,iterations=3)
     mask1=cv2.dilate(mask1,kernel,iterations=3)
-    # plt.figure(figsize = (16,4))
-    # plt.imshow(mask1, cmap='gray')
+    if debug:
+        plt.figure(figsize = (16,4))
+        plt.imshow(mask1, cmap='gray')
     
     #Then thresholding value
     threshold = 100
@@ -68,22 +76,23 @@ def detect_round_object(frame):
     #Again, closing
     mask2=cv2.erode(thresh2,kernel,iterations=3)
     mask2=cv2.dilate(mask2,kernel,iterations=3)
-    # plt.figure(figsize = (16,4))
-    # plt.imshow(mask2, cmap='gray')
+    if debug:
+        plt.figure(figsize = (16,4))
+        plt.imshow(mask2, cmap='gray')
     
     #Combining the masks
     mask=mask2 & mask1
-    # plt.figure(figsize = (16,4))
-    # plt.imshow(mask, cmap='gray')
+    if debug:
+        plt.figure(figsize = (16,4))
+        plt.imshow(mask, cmap='gray')
     #cv2.waitKey(10000)
     
     if circles is not None:
         # Convert the (x, y) coordinates and radius of the circles to integers
         circles = np.round(circles[0, :]).astype("int")
         redCircles=[]
-        # Draw the circles on the frame
-        
-        
+        # apply masks and check whether circle center coordinates are located 
+        #in positive parts of mask
         for (x, y, r) in circles:
             if mask[y-1,x-1]==255:
                 cv2.circle(frame, (x, y), r, (0, 255, 0), 4)
@@ -94,7 +103,7 @@ def detect_round_object(frame):
 # Finds the depth of smarties in a plane, 
 # from the known height of the camera used, the focal length and centroid positions
 
-#Camera Calibration
+#Apply Camera Calibration
 direc = "C:\\Users\\carle\\Documents\\RoboticsProj\\calib"
 ret,mtx,dist,rvecs,tvecs=calibrateCamera(direc)
 
@@ -129,6 +138,7 @@ z_off=-45 ##
 
 robotMove(portHandler, packetHandler, table1Pos)
 _,_ = cap.read() #flush camera frame
+#Get image only if it is a real image
 while True:  
     count=1
     ret, frame = cap.read()
@@ -140,9 +150,12 @@ while True:
         cap.release()
         break
 
+#Show the image captured
 cv2.imshow("Frame",frame)
 cv2.waitKey(1000)
 h,w = frame.shape[:2]
+
+#Optimize camera matrix based on undistortion params from camera calibration
 newcameramtx, roi = cv2.getOptimalNewCameraMatrix(mtx,dist,(w,h),1,(w,h))
 dst = cv2.undistort(frame, mtx, dist, None, newcameramtx)
 
@@ -153,7 +166,7 @@ dst = dst[y:y+h, x:x+w]
 cv2.imwrite('calibresult_simple.png', dst)
 print("undistortion done")
 
-
+#Apply detect_round_object to find redd smarties
 round_objects,mms = detect_round_object(dst)
 cv2.imshow("Detected!",round_objects)
 cv2.waitKey(1000)
@@ -203,7 +216,6 @@ for i in range(0,len(d)):
 #Using the fact that 
 #distance_in_word/height_in_world=distance_in_image/focal_length
 #We can calculate height
-
 
 
 cap.release()
